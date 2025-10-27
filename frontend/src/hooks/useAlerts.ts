@@ -110,7 +110,7 @@ export const useAlerts = () => {
       const [casesResponse, attorneysResponse, alertsResponse] = await Promise.all([
         fetch(casesUrl),
         fetch('http://localhost:50000/api/attorneys'),
-        fetch('http://localhost:50000api/alerts'),
+        fetch('http://localhost:50000/api/alerts'),
       ]);
 
       if (!casesResponse.ok || !attorneysResponse.ok || !alertsResponse.ok) {
