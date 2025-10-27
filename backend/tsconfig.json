@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    // ======== 基本設定 ========
+    "rootDir": "./src", // ← この行を新しく追加してください
+    "target": "esnext",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "outDir": "./dist",
+    "sourceMap": true,
+
+    // ======== 型に関する設定 ========
+    "strict": true,
+    "types": ["node"],
+
+    // ======== モジュール相互運用に関する設定 ========
+    "jsx": "react-jsx",
+    "isolatedModules": true,
+    "verbatimModuleSyntax": true,
+    "moduleDetection": "force",
+
+    // ======== ライブラリチェック ========
+    "skipLibCheck": true
+  },
+  "include": [
+    "src/**/*"
+  ]
+}

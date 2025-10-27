@@ -1,0 +1,23 @@
+/* src/styles/alerts.css など、プロジェクトのメインCSSファイルに追記 */
+
+#alert-container-custom {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1050; 
+  display: flex;
+  justify-content: flex-start; 
+  flex-wrap: nowrap;
+  overflow-x: auto; 
+  padding: 10px;
+  pointer-events: none; /* コンテナ全体はクリック無効にし、子要素のみクリックを有効にする */
+}
+
+/* （コンポーネント内で適用されているインラインスタイルが優先されるため、
+    インラインスタイルとして残した要素のスタイルを削除しても良いです） */
+
+
+.alert-blink {
+    animation: blink-red 1s step-end infinite;
+}

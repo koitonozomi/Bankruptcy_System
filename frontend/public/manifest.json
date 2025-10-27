@@ -1,0 +1,20 @@
+{
+  "manifest_version": 3,
+  "name": "破産再生アラートシステム",
+  "version": "1.0",
+  "description": "案件の遅延をリアルタイムで通知します。",
+  "permissions": [
+    "notifications",
+    "alarms"
+  ],
+  "background": {
+    "service_worker": "service-worker.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": "icon.png"
+  },
+  "icons": {
+    "48": "icon.png"
+  }
+}
