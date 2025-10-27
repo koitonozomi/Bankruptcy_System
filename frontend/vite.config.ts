@@ -17,7 +17,7 @@ export default defineConfig({
     port: 50001, // 任意（Viteのポート）
     proxy: {
       '/api': {
-        target: 'http://172.16.1.135:50000', // ← バックエンドのURL
+        target: 'http://localhost:50000', // ← バックエンドのURL
         changeOrigin: true,
         secure: false,
       }
