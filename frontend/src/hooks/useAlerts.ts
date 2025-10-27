@@ -39,7 +39,7 @@ async function subscribeToPushNotifications() {
     console.log('Push notification subscribed:', subscription);
 
     // 生成された購読情報をバックエンドに送信してDBに保存してもらう
-    await fetch('http://172.16.1.135:50000/api/subscribe', {
+    await fetch('http://172.16.1.135:50001/api/subscribe', {
       method: 'POST',
       body: JSON.stringify(subscription),
       headers: {
@@ -109,7 +109,7 @@ export const useAlerts = () => {
       
       const [casesResponse, attorneysResponse, alertsResponse] = await Promise.all([
         fetch(casesUrl),
-        fetch('http://localhost:50000/api/attorneys'),
+        fetch('http://localhost:50001/api/attorneys'),
         fetch('http://localhost:50000/api/alerts'),
       ]);
 

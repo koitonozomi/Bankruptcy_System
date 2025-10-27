@@ -23,7 +23,7 @@ const AlertSettingsModal: React.FC<AlertSettingsModalProps> = ({ open, onClose }
         setIsLoading(true);
         setError(null);
         try {
-          const response = await fetch('http://172.16.1.135:50000/api/alert-conditions');
+          const response = await fetch('http://172.16.1.135:50001/api/alert-conditions');
           if (!response.ok) {
             throw new Error('設定の読み込みに失敗しました');
           }
