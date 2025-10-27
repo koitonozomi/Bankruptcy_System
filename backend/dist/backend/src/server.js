@@ -4,7 +4,7 @@ import cron from 'node-cron'; // 定期実行ライブラリ
 import { query } from './db/index.js'; // indexファイルまで明記し、.jsを付ける
 import { checkAllCaseAlerts } from './services/alertService.js'; // .jsを付ける
 const app = express();
-const PORT = process.env.PORT || 50001;
+const PORT = process.env.PORT || 50000;
 app.use(cors({ origin: 'http://localhost:5173' }));
 app.use(express.json());
 // [GET] /api/cases - 全案件データを弁護士名と結合して取得

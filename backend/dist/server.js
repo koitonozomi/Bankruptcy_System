@@ -7,12 +7,12 @@ import { cleanAttorneyName } from './services/utils.js';
 import dayjs from 'dayjs';
 console.log("--- server.ts script starting ---");
 const app = express();
-const PORT = process.env.PORT || 50001;
+const PORT = process.env.PORT || 50000;
 app.use(cors({
     origin: [
         'http://localhost:5173', // ローカル開発用
         // ↓ デプロイ（本番）用のURL 
-        'http://172.16.1.135:50001',
+        'http://172.16.1.135:5000',
         // ↓ 今動いている「開発用」のURLを「追加」する
         'http://172.16.1.11:5173'
     ]
