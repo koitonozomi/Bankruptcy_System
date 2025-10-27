@@ -1,4 +1,3 @@
-// vite.config.ts
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { resolve } from 'path'
@@ -9,7 +8,18 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: resolve(__dirname, 'index.html'),
-        popup: resolve(__dirname, 'popup.html') // ← この行を追加
+        popup: resolve(__dirname, 'popup.html')
+      }
+    }
+  },
+  server: {
+    host: true, // LAN経由アクセス許可
+    port: 5173, // 任意（Viteのポート）
+    proxy: {
+      '/api': {
+        target: 'http://172.16.1.135:50001', // ← バックエンドのURL
+        changeOrigin: true,
+        secure: false,
       }
     }
   }
