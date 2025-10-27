@@ -39,7 +39,7 @@ async function subscribeToPushNotifications() {
     console.log('Push notification subscribed:', subscription);
 
     // 生成された購読情報をバックエンドに送信してDBに保存してもらう
-    await fetch('http://localhost:3001/api/subscribe', {
+    await fetch('http://172.16.1.135:50001/api/subscribe', {
       method: 'POST',
       body: JSON.stringify(subscription),
       headers: {
@@ -105,12 +105,12 @@ export const useAlerts = () => {
     setIsLoading(true);
     setError(null);
     try {
-      const casesUrl = `http://localhost:3001/api/cases?page=${page}&limit=${limit}&attorneyId=${attorneyId}`;
+      const casesUrl = `http://localhost:50001/api/cases?page=${page}&limit=${limit}&attorneyId=${attorneyId}`;
       
       const [casesResponse, attorneysResponse, alertsResponse] = await Promise.all([
         fetch(casesUrl),
-        fetch('http://localhost:3001/api/attorneys'),
-        fetch('http://localhost:3001/api/alerts'),
+        fetch('http://localhost:50001/api/attorneys'),
+        fetch('http://localhost:50001/api/alerts'),
       ]);
 
       if (!casesResponse.ok || !attorneysResponse.ok || !alertsResponse.ok) {

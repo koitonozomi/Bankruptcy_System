@@ -10,7 +10,7 @@ import dayjs from 'dayjs';
 console.log("--- server.ts script starting ---");
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 50001;
 
 app.use(cors({ 
   origin: [

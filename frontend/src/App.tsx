@@ -47,8 +47,8 @@ const App: React.FC = () => {
     const isNew = !dataToSave.case_id;
     const method = isNew ? 'POST' : 'PATCH';
     const url = isNew 
-      ? `http://localhost:3001/api/cases` 
-      : `http://localhost:3001/api/cases/${dataToSave.case_id}`;
+      ? `http://172.16.1.135:50001/api/cases` 
+      : `http://172.16.1.135:50001/api/cases/${dataToSave.case_id}`;
     const response = await fetch(url, {
       method: method,
       headers: { 'Content-Type': 'application/json' },

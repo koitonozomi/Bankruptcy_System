@@ -14,7 +14,7 @@ export default defineConfig({
   },
   server: {
     host: true, // LAN経由アクセス許可
-    port: 5173, // 任意（Viteのポート）
+    port: 50001, // 任意（Viteのポート）
     proxy: {
       '/api': {
         target: 'http://172.16.1.135:50001', // ← バックエンドのURL
