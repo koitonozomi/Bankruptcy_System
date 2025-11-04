@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import {
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
-  Paper, Box, TableSortLabel, Button, Tabs, Tab, Link // ★ Linkをインポート
+  Paper, Box, TableSortLabel, Tabs, Tab, Link
 } from '@mui/material';
 import type { CaseProgress } from '../types/progress';
 
@@ -9,9 +9,9 @@ import type { CaseProgress } from '../types/progress';
 type Order = 'asc' | 'desc';
 type CaseType = 'すべて' | 'ストレート破産' | '破産（管財人あり）' | '再生';
 
+// ★ 修正点 1: onEdit プロパティを削除
 interface ProgressTableProps {
   cases: CaseProgress[];
-  onEdit: (caseId: string) => void;
 }
 
 // --- ヘルパー関数 (変更なし) ---
@@ -33,7 +33,8 @@ function getComparator<Key extends keyof any>(
 }
 
 // --- メインコンポーネント ---
-const ProgressTable: React.FC<ProgressTableProps> = ({ cases, onEdit }) => {
+// ★ 修正点 2: onEdit を引数から削除
+const ProgressTable: React.FC<ProgressTableProps> = ({ cases }) => {
   const [order, setOrder] = useState<Order>('asc');
   const [orderBy, setOrderBy] = useState<keyof CaseProgress>('management_number');
   const [activeTab, setActiveTab] = useState<CaseType>('すべて');
@@ -90,7 +91,7 @@ const ProgressTable: React.FC<ProgressTableProps> = ({ cases, onEdit }) => {
                   </TableSortLabel>
                 </TableCell>
               ))}
-              <TableCell>操作</TableCell>
+              {/* ★ 修正点 3: 「操作」列のヘッダーを削除 */}
             </TableRow>
           </TableHead>
           <TableBody>
@@ -98,13 +99,13 @@ const ProgressTable: React.FC<ProgressTableProps> = ({ cases, onEdit }) => {
               let rowStyle: React.CSSProperties = {};
               let className = '';
 
-              if (row.alert_status === '黒') {
-                rowStyle = { backgroundColor: '#212121', color: 'white' };
-                className = 'alert-black'; 
-              } else if (row.is_unanswered || row.alert_status === '赤') {
-                className = 'alert-blink-red';
+              if (row.is_unanswered || row.alert_status === '赤') {
+                  className = 'alert-blink-red';
+              } else if (row.alert_status === '黒') {
+                  rowStyle = { backgroundColor: '#212121', color: 'white' };
+                  className = 'alert-black'; 
               } else if (row.alert_status === '黄') {
-                rowStyle = { backgroundColor: '#fff8e1' };
+                  rowStyle = { backgroundColor: '#fff8e1' };
               }
 
               return (
@@ -116,27 +117,21 @@ const ProgressTable: React.FC<ProgressTableProps> = ({ cases, onEdit }) => {
                 >
                   {columns.map((column) => (
                     <TableCell key={column.id as string} style={rowStyle}> 
-                      {/* ★★★★★ ここから修正 ★★★★★ */}
                       {column.id === 'client_name' ? (
                         <Link 
                           href={`http://192.168.11.135/client/detail/?no=${row.management_number}`} 
                           target="_blank" 
                           rel="noopener noreferrer"
-                          sx={{ color: 'inherit' }} // 行の文字色を継承
+                          sx={{ color: 'inherit' }}
                         >
                           {row.client_name}
                         </Link>
                       ) : (
                         row[column.id] as string | number | null
                       )}
-                      {/* ★★★★★ ここまで修正 ★★★★★ */}
                     </TableCell>
                   ))}
-                  <TableCell style={rowStyle}>
-                    <Button variant="outlined" size="small" onClick={() => onEdit(String(row.case_id))}>
-                      編集
-                    </Button>
-                  </TableCell>
+                  {/* ★ 修正点 4: 「編集」ボタンのセルを削除 */}
                 </TableRow>
               );
             })}

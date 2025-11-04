@@ -12,18 +12,26 @@ console.log("--- server.ts script starting ---");
 const app = express();
 const PORT = process.env.PORT || 50000;
 
-app.use(cors({ 
-  origin: [
-    'http://localhost:5173',        // ローカル開発用
-    
-    // ↓ デプロイ（本番）用のURL 
-    'http://172.16.1.135:5000', 
-    
-    // ↓ 今動いている「開発用」のURLを「追加」する
-    'http://172.16.1.11:5173'      
-  ] 
-}));
+// ★★★★★ 修正点：CORS設定をより強力な関数ベースに変更 ★★★★★
 
+// 許可するオリジン（アクセス元）のリスト
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:50001',
+  'http://172.16.1.135:50001',
+  'http://172.16.1.11:5173'
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    // 許可リストにないオリジンからのアクセス、またはオリジン不明のアクセスをチェック
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true); // 許可
+    } else {
+      callback(new Error('Not allowed by CORS')); // 拒否
+    }
+  }
+}));
 app.use(express.json());
 
 // =============================================================================

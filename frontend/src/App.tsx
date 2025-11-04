@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { 
-  Container, Typography, AppBar, Toolbar, Button, 
+  Container, Typography, AppBar, Toolbar, 
   ThemeProvider, createTheme, IconButton, CircularProgress, Box,
   FormControl, InputLabel, Select, MenuItem, Pagination
 } from '@mui/material';
@@ -10,7 +10,7 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import ProgressTable from './components/ProgressTable';
 import AlertDashboard from './components/AlertDashboard';
 import CriticalAlertModal from './components/CriticalAlertModal';
-import CaseDetailForm from './components/CaseDetailForm';
+// import CaseDetailForm from './components/CaseDetailForm'; // ★ 削除
 import AlertSettingsModal from './components/AlertSettingsModal';
 import type { CaseProgress } from './types/progress';
 import { useAlerts } from './hooks/useAlerts';
@@ -24,13 +24,15 @@ const theme = createTheme({
 });
 
 const App: React.FC = () => {
+  // ★ 修正: 'markCaseUnresolved' を削除
   const { allCases, totalCount, alerts, attorneys, fetchData, isLoading } = useAlerts();
 
   // --- State管理 ---
   const [modalDismissed, setModalDismissed] = useState(false);
-  const [isDetailFormOpen, setIsDetailFormOpen] = useState(false);
-  const [selectedCaseId, setSelectedCaseId] = useState<string | null>(null);
-  const [highlightField, setHighlightField] = useState<keyof CaseProgress | null>(null);
+  // ★ 編集モーダル関連のStateを削除
+  // const [isDetailFormOpen, setIsDetailFormOpen] = useState(false);
+  // const [selectedCaseId, setSelectedCaseId] = useState<string | null>(null);
+  // const [highlightField, setHighlightField] = useState<keyof CaseProgress | null>(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [selectedLawyerId, setSelectedLawyerId] = useState<string>('すべて');
   const [page, setPage] = useState(1);
@@ -43,23 +45,11 @@ const App: React.FC = () => {
 
 
   // --- イベントハンドラ ---
-  const handleSaveCase = async (dataToSave: Partial<CaseProgress>) => {
-    const isNew = !dataToSave.case_id;
-    const method = isNew ? 'POST' : 'PATCH';
-    const url = isNew 
-      ? `http://172.16.1.135:50001/api/cases` 
-      : `http://172.16.1.135:50001/api/cases/${dataToSave.case_id}`;
-    const response = await fetch(url, {
-      method: method,
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(dataToSave),
-    });
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || '保存に失敗しました');
-    }
-    fetchData(page, rowsPerPage, selectedLawyerId);
-  };
+  // ★ 保存(Save)と編集(Edit)関連のハンドラをすべて削除
+  // const handleSaveCase = ...
+  // const handleEditCase = ...
+  // const handleOpenNewCaseForm = ...
+  // const handleCloseDetailForm = ...
 
   const handleRefresh = async () => {
     setPage(1);
@@ -82,29 +72,11 @@ const App: React.FC = () => {
 
   const handleDismissCriticalAlert = () => { setModalDismissed(true); };
   
+  // ★ 修正: handleMarkUnresolved は機能しないように（コンソールログのみ）
   const handleMarkUnresolved = useCallback(async (caseId: string) => {
     console.log(`Marking case ${caseId} as unresolved is not fully implemented yet.`);
     setModalDismissed(true);
   }, []);
-
-  const handleEditCase = useCallback((caseId: string, fieldToHighlight: keyof CaseProgress | null) => {
-    setSelectedCaseId(caseId);
-    setHighlightField(fieldToHighlight);
-    setIsDetailFormOpen(true);
-    setModalDismissed(true);
-  }, []);
-
-  const handleOpenNewCaseForm = () => {
-    setSelectedCaseId(null);
-    setHighlightField(null);
-    setIsDetailFormOpen(true);
-  };
-
-  const handleCloseDetailForm = () => {
-    setIsDetailFormOpen(false);
-    setSelectedCaseId(null);
-    setHighlightField(null);
-  };
 
   const redAlerts = alerts.filter(a => a.type === 'red');
   const showCriticalModal = redAlerts.length > 0 && !modalDismissed;
@@ -137,9 +109,7 @@ const App: React.FC = () => {
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             破産・再生 進捗管理ダッシュボード
           </Typography>
-          <Button color="inherit" onClick={handleOpenNewCaseForm}>
-            + 新規案件登録
-          </Button>
+          {/* ★ 「+ 新規案件登録」ボタンを削除 */}
           <IconButton color="inherit" onClick={handleRefresh} title="最新の情報に更新">
             {isLoading ? <CircularProgress size={24} color="inherit" /> : <RefreshIcon />}
           </IconButton>
@@ -179,9 +149,9 @@ const App: React.FC = () => {
               </FormControl>
             </Box>
             
+            {/* ★ onEditプロパティを削除 */}
             <ProgressTable 
               cases={allCases} 
-              onEdit={(caseId) => handleEditCase(caseId, null)} 
             />
             
             <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
@@ -208,24 +178,11 @@ const App: React.FC = () => {
         open={showCriticalModal}
         onDismiss={handleDismissCriticalAlert}
         onMarkUnresolved={handleMarkUnresolved}
-        onEditCase={handleEditCase}
+        onEditCase={() => {}} // ★ 編集機能がないため、ダミーの関数を渡す
       />
 
-      {isDetailFormOpen && (() => {
-        const selectedCaseData = selectedCaseId 
-          ? allCases.find(c => String(c.case_id) === selectedCaseId) || null 
-          : null;
-        return (
-          <CaseDetailForm
-            open={isDetailFormOpen}
-            onClose={handleCloseDetailForm}
-            caseData={selectedCaseData}
-            highlightField={highlightField}
-            onSave={handleSaveCase}
-            lawyerList={attorneys}
-          />
-        );
-      })()}
+      {/* ★ CaseDetailFormの呼び出しを削除 */}
+      {/* {isDetailFormOpen && (() => { ... })()} */}
 
       <AlertSettingsModal
         open={isSettingsOpen}
