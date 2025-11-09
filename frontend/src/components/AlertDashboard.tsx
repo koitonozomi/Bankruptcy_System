@@ -125,4 +125,3 @@ const AlertDashboard: React.FC<AlertDashboardProps> = ({ selectedLawyerId, onLaw
 };
 
 export default AlertDashboard;
-

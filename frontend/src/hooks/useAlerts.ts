@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import type { CaseProgress, Attorney } from '../types/progress';
+// ★ 修正 1: コメントアウトを外し、外部の正しい型定義を参照する
+import type { CaseProgress, Attorney } from '../types/progress'; 
 
 // =============================================================================
 // ★★★ プッシュ通知関連の追加 ★★★
@@ -7,6 +8,7 @@ import type { CaseProgress, Attorney } from '../types/progress';
 
 // VAPIDキーはバックエンドで生成したものに置き換えてください。
 // これはクライアントサイドで安全に公開できる公開鍵です。
+// ★ 注意: 本番環境では必ずバックエンドで生成したものに置き換えてください。
 const VAPID_PUBLIC_KEY = 'BJr3eVI_YqNBYBBhQRw_1DhJ9JajtLlzqKN74DtjDtUcYuFrQ16GV5fh7iExC3T_TRXkt_XsTYvxpV_kKcJnu0w'; // TODO: バックエンドで生成した公開鍵に置き換える
 
 /**
@@ -39,9 +41,10 @@ async function subscribeToPushNotifications() {
     console.log('Push notification subscribed:', subscription);
 
     // 生成された購読情報をバックエンドに送信してDBに保存してもらう
-    await fetch('http://172.16.1.135:50001/api/subscribe', {
+    // ★ 修正: ユーザーIDを仮で含める（バックエンドの/api/subscribeエンドポイントの要件に合わせる）
+    await fetch('/api/subscribe', {
       method: 'POST',
-      body: JSON.stringify(subscription),
+      body: JSON.stringify({ userId: 1, subscription }), 
       headers: {
         'Content-Type': 'application/json',
       },
@@ -79,17 +82,18 @@ async function showTestNotification() {
 }
 
 
-
 // =============================================================================
-// 既存のフックロジック
+// 既存のフックロジックと型の修正
 // =============================================================================
 
+// Alert型はuseAlerts固有の型として維持。managementNumberはnullを許容するように修正。
 export interface Alert {
   caseId: string;
+  managementNumber: string | null; 
   type: 'black' | 'red' | 'yellow';
   message: string;
   unresolved: boolean;
-  clientName: string;
+  clientName: string; 
   attorneyName: string | undefined;
 }
 
@@ -101,23 +105,31 @@ export const useAlerts = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchData = useCallback(async (page: number = 1, limit: number = 50, attorneyId: string = 'すべて') => {
+  // ★ 修正 3: fetchDataの引数にsearchTermを追加し、API呼び出しURLに含める
+  const fetchData = useCallback(async (
+        page: number = 1, 
+        limit: number = 50, 
+        attorneyId: string = 'すべて',
+        searchTerm: string = '' 
+    ) => {
     setIsLoading(true);
     setError(null);
     try {
-      const casesUrl = `http://localhost:5000/api/cases?page=${page}&limit=${limit}&attorneyId=${attorneyId}`;
-      
+      // ★ 修正 3-2: casesUrl に searchTerm を含める
+      const casesUrl = `/api/cases?page=${page}&limit=${limit}&attorneyId=${attorneyId}&search=${encodeURIComponent(searchTerm)}`;
+
       const [casesResponse, attorneysResponse, alertsResponse] = await Promise.all([
         fetch(casesUrl),
-        fetch('http://localhost:50001/api/attorneys'),
-        fetch('http://localhost:50000/api/alerts'),
+        fetch('/api/attorneys'),
+        fetch('/api/alerts'),
       ]);
 
       if (!casesResponse.ok || !attorneysResponse.ok || !alertsResponse.ok) {
         throw new Error('サーバーからのデータ取得に失敗しました。');
       }
       
-      const casesData = await casesResponse.json();
+      // CaseProgress/Attorney型は外部からインポートされた型を使用
+      const casesData: { cases: CaseProgress[], totalCount: number } = await casesResponse.json();
       const attorneysData: Attorney[] = await attorneysResponse.json();
       const rawAlertsData: CaseProgress[] = await alertsResponse.json();
       
@@ -129,13 +141,21 @@ export const useAlerts = () => {
         let alertType: 'black' | 'red' | 'yellow' = 'yellow';
         if (c.alert_status === '黒') alertType = 'black';
         else if (c.alert_status === '赤') alertType = 'red';
+        
+        // management_numberが null, undefined, または空文字列の場合は null に統一
+        // ★ 修正6: management_numberがnumber型で来ている可能性を考慮し、String()でラップ
+        const managementNumber = (c.management_number && String(c.management_number).trim() !== '') 
+                                 ? String(c.management_number).trim() 
+                                 : null;
+
         return {
           caseId: String(c.case_id),
+          managementNumber: managementNumber, 
           type: alertType,
           message: `${c.client_name}様の案件で遅延が発生しています。`,
           unresolved: c.is_unanswered,
-          clientName: c.client_name,
           attorneyName: c.attorney_name,
+          clientName: c.client_name, 
         };
       });
       setAlerts(newAlerts);
@@ -149,10 +169,10 @@ export const useAlerts = () => {
   }, []);
 
   useEffect(() => {
-    fetchData(); // 初回データ読み込み
+    fetchData(); // 初回データ読み込み (引数なし = デフォルト値を使用)
   }, [fetchData]);
 
-   // ★ プッシュ通知購読用のuseEffect
+    // ★ プッシュ通知購読用のuseEffect
   useEffect(() => {
     if ('serviceWorker' in navigator && 'PushManager' in window) {
       subscribeToPushNotifications();
@@ -161,7 +181,7 @@ export const useAlerts = () => {
     }
   }, []); // 初回の一度だけ実行
 
-   // ★★★★★ 修正点 2: テスト用のキーボードイベントリスナーを追加 ★★★★★
+    // ★★★★★ 修正点 2: テスト用のキーボードイベントリスナーを追加 ★★★★★
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       // 'T'キーが押されたらテスト通知を表示
@@ -171,7 +191,7 @@ export const useAlerts = () => {
       }
     };
 
-   // イベントリスナーを登録
+    // イベントリスナーを登録
     window.addEventListener('keydown', handleKeyDown);
 
     // コンポーネントがアンマウントされるときにリスナーを解除（メモリリーク防止）
