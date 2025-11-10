@@ -5,15 +5,17 @@ import type { SelectChangeEvent } from '@mui/material';
 import WarningIcon from '@mui/icons-material/Warning';
 import type { Alert } from '../hooks/useAlerts';
 
-// 親コンポーネント(App.tsx)から渡されるPropsの型を定義
+// ★ 修正点 1: onAlertClick をPropsに追加
 interface AlertDashboardProps {
   selectedLawyerId: string;
   onLawyerChange: (event: SelectChangeEvent<string>) => void;
+  onAlertClick: (managementNumber: string | null) => void;
 }
 
-const AlertDashboard: React.FC<AlertDashboardProps> = ({ selectedLawyerId, onLawyerChange }) => {
+const AlertDashboard: React.FC<AlertDashboardProps> = ({ selectedLawyerId, onLawyerChange, onAlertClick }) => {
   const { alerts, attorneys } = useAlerts();
 
+  
   const filteredAlerts = useMemo(() => {
     if (selectedLawyerId === 'すべて') {
       return alerts;
@@ -39,6 +41,12 @@ const AlertDashboard: React.FC<AlertDashboardProps> = ({ selectedLawyerId, onLaw
         return { bgcolor: '#ffb74d', color: 'black' };
     }
   };
+
+  console.log('🔍 alerts:', alerts);
+console.log('🔍 attorneys:', attorneys);
+console.log('🔍 selectedLawyerId:', selectedLawyerId);
+console.log('🔍 filteredAlerts:', filteredAlerts);
+
   
   // アラートがない場合は何も表示しない
   if (alerts.length === 0) {
@@ -54,12 +62,15 @@ const AlertDashboard: React.FC<AlertDashboardProps> = ({ selectedLawyerId, onLaw
         top: '64px', left: 0, width: '320px', bottom: 0,
         flexDirection: 'column', alignItems: 'flex-start', p: 2, gap: 2,
         bgcolor: '#37474f', color: 'white', borderTop: 'none',
-        display: { xs: 'none', md: 'flex' },
+// 🌟 修正: 画面サイズに関わらず常に表示する (開発用)
+        display: 'flex', 
         '@media (max-width: 900px)': {
-            display: 'block', top: 'auto', left: 0, right: 0, bottom: 0,
-            width: '100%', maxHeight: '40vh',
-            borderTop: '1px solid rgba(255,255,255,0.2)', p: 1,
-        }
+          display: 'none', // モバイルでの表示制御を調整
+// (またはモバイル表示をテストしたい場合は display: 'block' など)
+        top: 'auto', left: 0, right: 0, bottom: 0,
+        width: '100%', maxHeight: '40vh',
+        borderTop: '1px solid rgba(255,255,255,0.2)', p: 1,
+       }
       }}
     >
       <Box sx={{ display: 'flex', alignItems: 'center', width: '100%', mb: 1 }}>
@@ -93,12 +104,13 @@ const AlertDashboard: React.FC<AlertDashboardProps> = ({ selectedLawyerId, onLaw
       <Box sx={{ display: 'flex', gap: 1.5, width: '100%', flexDirection: 'column', overflowY: 'auto' }}>
         {filteredAlerts.map((alert) => {
             const styles = getAlertStyles(alert.type);
-            // ★★★ この行にスペースを追加 ★★★
             const 担当者 = alert.attorneyName || '担当者なし';
             
             return (
                 <Chip
                     key={alert.caseId}
+                    // ★ 修正点 3: onClickイベントハンドラを追加
+                    onClick={() => onAlertClick(alert.managementNumber)}
                     label={
                         <Box sx={{ textAlign: 'left', width: '100%' }}>
                             <Typography variant="caption" sx={{ fontWeight: 'bold' }}>
@@ -115,6 +127,7 @@ const AlertDashboard: React.FC<AlertDashboardProps> = ({ selectedLawyerId, onLaw
                         justifyContent: 'flex-start',
                         '& .MuiChip-label': { display: 'block', whiteSpace: 'normal', p: 0 },
                         width: '100%',
+                        cursor: 'pointer', // ★ 修正点 4: クリック可能であることを示す
                     }}
                 />
             );

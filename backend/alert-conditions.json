@@ -1,0 +1,72 @@
+[
+  {
+    "condition_id": 1,
+    "trigger_event": "一覧作成遅延",
+    "target_column": "date_document_arrival",
+    "threshold_days_red": 3,
+    "threshold_days_yellow": null,
+    "condition_type": "赤",
+    "is_active": true,
+    "related_field": "date_creditor_list_complete"
+  },
+  {
+    "condition_id": 2,
+    "trigger_event": "初回挨拶遅延",
+    "target_column": "date_creditor_list_complete",
+    "threshold_days_red": 3,
+    "threshold_days_yellow": null,
+    "condition_type": "赤",
+    "is_active": true,
+    "related_field": "date_first_greeting"
+  },
+  {
+    "condition_id": 3,
+    "trigger_event": "申立遅延",
+    "target_column": "date_first_greeting",
+    "threshold_days_red": 10,
+    "threshold_days_yellow": null,
+    "condition_type": "赤",
+    "is_active": true,
+    "related_field": "date_filing"
+  },
+  {
+    "condition_id": 4,
+    "trigger_event": "追完期日前アラート",
+    "target_column": "date_supplementary_deadline",
+    "threshold_days_red": -2,
+    "threshold_days_yellow": -5,
+    "condition_type": "期限前",
+    "is_active": true,
+    "related_field": null
+  },
+  {
+    "condition_id": 5,
+    "trigger_event": "財産目録・報告書提出期限前アラート",
+    "target_column": "date_midterm_report_deadline",
+    "threshold_days_red": -2,
+    "threshold_days_yellow": -5,
+    "condition_type": "期限前",
+    "is_active": true,
+    "related_field": null
+  },
+  {
+    "condition_id": 6,
+    "trigger_event": "再生計画案締切日前アラート",
+    "target_column": "date_plan_submission_deadline",
+    "threshold_days_red": -5,
+    "threshold_days_yellow": -10,
+    "condition_type": "期限前",
+    "is_active": true,
+    "related_field": null
+  },
+  {
+    "condition_id": 7,
+    "trigger_event": "認可確定遅延",
+    "target_column": "date_approval_decision",
+    "threshold_days_red": 45,
+    "threshold_days_yellow": null,
+    "condition_type": "赤",
+    "is_active": true,
+    "related_field": "date_finalized" 
+  }
+]

@@ -24,11 +24,12 @@ export interface Attorney {
 export interface AlertCondition {
   condition_id: number;
   trigger_event: string;
-  condition_type: '黄' | '赤';
-  threshold_days_red: number;
-  threshold_days_yellow: number | null;
   target_column: string;
+  threshold_days_red: number;
+  threshold_days_yellow?: number | null; 
+  condition_type: '赤' | '黄';
   is_active: boolean;
+  related_field?: string;               
 }
 
 /**
@@ -45,7 +46,9 @@ export interface CaseProgress {
   attorney_id: number | null;
   attorney_name?: string; // APIでのJOINによって付与される
   staff_name: string | null;
-  case_type: 'ストレート破産' | '破産（管財人あり）' | '再生' | null;
+  delay_step_name?: string;
+  delay_days?: number;      // 遅延している日数 (例: 3)
+  case_type?: string;
   
   // ---------------------------------------------------------------------------
   // II. 日付関連

@@ -75,7 +75,7 @@ const CaseDetailForm: React.FC<CaseDetailFormProps> = ({ open, onClose, caseData
     setIsSaving(true);
     const dataToSave: Partial<CaseProgress> = { ...formData, reminder_documents_dates: dueDates };
     if (dataToSave.is_unanswered) dataToSave.is_unanswered = false;
-    try {
+   try {
       await onSave(dataToSave);
       setSnackbar({ open: true, message: "保存しました。", severity: 'success' });
       onClose();

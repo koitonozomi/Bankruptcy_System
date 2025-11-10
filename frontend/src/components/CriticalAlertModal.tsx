@@ -72,9 +72,10 @@ const CriticalAlertModal: React.FC<CriticalAlertModalProps> = ({ alerts, open, o
                   >
                     社内システムに遷移
                   </Button>
+                   {/* 
                   <Button variant="outlined" onClick={() => onMarkUnresolved(alert.caseId)}>
                     未対応としてマーク
-                  </Button>
+                  </Button> */}
                 </Box>
               </Box>
             ))}
